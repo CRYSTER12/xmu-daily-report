@@ -82,47 +82,6 @@ def select_dropdown(driver: WebDriver, dropdown_xpath: str, target_xpath: str, c
     time.sleep(1)
     click_given_xpath(driver, target_xpath, f"{comment} 选项")
 
-class Job:
-    def __init__(self, driver: WebDriver, comment: str):
-        self.driver = driver
-        self.comment = comment
-        self.children = []
-
-    def should_do(self) -> bool:
-        ...
-
-    def do(self):
-        if self.should_do():
-            logger.info(f"执行任务 {self.comment}")
-            self._do()
-            time.sleep(1)
-            for child in self.children:
-                child.do()
-        else:
-            logger.info(f"跳过任务 {self.comment}")
-
-    def _do(self):
-        ...
-
-    def add_child(self, *jobs):
-        self.children.extend(jobs)
-        return self
-    
-    
-    
-class ClickJob(Job):
-    def __init__(self, driver: WebDriver, xpath: str, comment: str):
-        super(ClickJob, self).__init__(driver, comment)
-        self.xpath = xpath
-
-    def should_do(self) -> bool:
-        return xpath_exists(self.driver, self.xpath, self.comment)
-
-    def _do(self):
-        click_given_xpath(self.driver, self.xpath, self.comment)
-        
-def click_vpn_login_tab() ->Job:
-    return ClickJob(webdriver.get(), '//*[@id="local"]', "VPN选择账号登录")
     
 
 def checkin(config, use_vpn=True) -> None:
@@ -160,7 +119,6 @@ def checkin(config, use_vpn=True) -> None:
 
     if use_vpn:
         # 首先登陆WebVPN，根据上面url在WebVPN登陆成功后会自动跳转打卡登录界面
-        click_vpn_login_tab().do()
         logintab = driver.find_element(By.CLASS_NAME, 'login-box')
         login = WebDriverWait(driver, 10).until(
             lambda x: x.find_element(By.ID, 'login'))
