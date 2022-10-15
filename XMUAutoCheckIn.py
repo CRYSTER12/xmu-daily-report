@@ -82,6 +82,32 @@ def select_dropdown(driver: WebDriver, dropdown_xpath: str, target_xpath: str, c
     time.sleep(1)
     click_given_xpath(driver, target_xpath, f"{comment} 选项")
 
+class Job:
+    def __init__(self, driver: WebDriver, comment: str):
+        self.driver = driver
+        self.comment = comment
+        self.children = []
+
+    def should_do(self) -> bool:
+        ...
+
+    def do(self):
+        if self.should_do():
+            logger.info(f"执行任务 {self.comment}")
+            self._do()
+            time.sleep(1)
+            for child in self.children:
+                child.do()
+        else:
+            logger.info(f"跳过任务 {self.comment}")
+
+    def _do(self):
+        ...
+
+    def add_child(self, *jobs):
+        self.children.extend(jobs)
+        return self
+    
     
     
 class ClickJob(Job):
@@ -95,7 +121,7 @@ class ClickJob(Job):
     def _do(self):
         click_given_xpath(self.driver, self.xpath, self.comment)
         
-def click_vpn_login_tab()
+def click_vpn_login_tab() ->Job:
     return ClickJob(webdriver.get(), '//*[@id="local"]', "VPN选择账号登录")
     
 
